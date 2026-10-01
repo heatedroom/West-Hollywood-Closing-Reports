@@ -56,7 +56,7 @@
   .section { background:var(--warm-white); border-radius:10px; margin-bottom:24px; overflow:hidden; box-shadow:0 2px 12px var(--shadow); border:1px solid var(--border); }
   .section-header { padding:20px 28px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); background:var(--cream); }
   .section-title-wrap { display:flex; align-items:center; gap:14px; }
-  .section-num { font-family:'Cormorant Garamond',serif; font-size:13px; font-weight:600; color:var(--clay); letter-spacing:0.06em; }
+  .section-num { display:none; }
   .section-title { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:600; color:var(--charcoal); }
   .section-sub { font-size:11px; color:#aaa; letter-spacing:0.04em; margin-top:2px; display:block; }
   .section-tally { font-size:12px; color:var(--clay); font-weight:500; background:var(--clay-muted); padding:3px 10px; border-radius:20px; transition:background 0.3s,color 0.3s; white-space:nowrap; }
@@ -67,9 +67,9 @@
   .opening-checklist { padding:16px 28px 20px; }
   .opening-checklist-title { font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--clay); font-weight:500; margin-bottom:12px; }
   .opening-bullets { list-style:none; display:flex; flex-direction:column; gap:10px; }
-  .opening-bullets li { display:flex; align-items:flex-start; gap:12px; font-size:14px; color:var(--dark); line-height:1.5; padding:10px 14px; background:var(--cream); border-radius:6px; border:1px solid var(--border); cursor:pointer; transition:background 0.15s; }
+  .opening-bullets li { display:flex; align-items:flex-start; gap:12px; font-size:14px; color:var(--dark); line-height:1.5; padding:10px 14px; background:var(--cream); border-radius:6px; border:1px solid var(--border); cursor:pointer; transition:background 0.15s; user-select:none; -webkit-user-select:none; }
   .opening-bullets li:hover { background:rgba(184,123,90,0.06); }
-  .opening-bullets li input[type="checkbox"] { display:none; }
+  .opening-bullets li input[type="checkbox"] { position:absolute; opacity:0; pointer-events:none; }
   .bullet-check { width:20px; height:20px; border:2px solid var(--border); border-radius:4px; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.2s; background:white; margin-top:1px; }
   .opening-bullets li input:checked ~ .bullet-check { background:var(--clay); border-color:var(--clay); }
   .opening-bullets li input:checked ~ .bullet-check::after { content:''; width:4px; height:8px; border:2px solid white; border-top:none; border-left:none; transform:rotate(45deg) translate(-1px,-1px); display:block; }
@@ -246,12 +246,12 @@
     <div class="clockin-reminder">⏱ Make sure all staff on this block are clocked in before proceeding</div>
     <div class="opening-checklist">
       <ul class="opening-bullets" id="section-o1">
-        <li><input type="checkbox" onchange="updateProgress()"><div class="bullet-check"></div><span class="bullet-text">Studio lights turned on</span></li>
-        <li><input type="checkbox" onchange="updateProgress()"><div class="bullet-check"></div><span class="bullet-text">Music iPad connected in the Room — approved playlist at appropriate volume throughout the studio</span></li>
-        <li><input type="checkbox" onchange="updateProgress()"><div class="bullet-check"></div><span class="bullet-text">Heated room checked & red lights added to the Room</span></li>
-        <li><input type="checkbox" onchange="updateProgress()"><div class="bullet-check"></div><span class="bullet-text">Front desk reset & ready for clients — all personal belongings stored in laundry room or a locker</span></li>
-        <li><input type="checkbox" onchange="updateProgress()"><div class="bullet-check"></div><span class="bullet-text">Front desk iPads on & logged in</span></li>
-        <li><input type="checkbox" onchange="updateProgress()"><div class="bullet-check"></div><span class="bullet-text">All staff clocked in</span></li>
+        <li onclick="toggleBullet(this)"><input type="checkbox" onchange="updateProgress()"><div class="bullet-check"></div><span class="bullet-text">Studio lights turned on</span></li>
+        <li onclick="toggleBullet(this)"><input type="checkbox" onchange="updateProgress()"><div class="bullet-check"></div><span class="bullet-text">Music iPad connected in the Room — approved playlist at appropriate volume throughout the studio</span></li>
+        <li onclick="toggleBullet(this)"><input type="checkbox" onchange="updateProgress()"><div class="bullet-check"></div><span class="bullet-text">Heated room checked & red lights added to the Room</span></li>
+        <li onclick="toggleBullet(this)"><input type="checkbox" onchange="updateProgress()"><div class="bullet-check"></div><span class="bullet-text">Front desk reset & ready for clients — all personal belongings stored in laundry room or a locker</span></li>
+        <li onclick="toggleBullet(this)"><input type="checkbox" onchange="updateProgress()"><div class="bullet-check"></div><span class="bullet-text">Front desk iPads on & logged in</span></li>
+        <li onclick="toggleBullet(this)"><input type="checkbox" onchange="updateProgress()"><div class="bullet-check"></div><span class="bullet-text">All staff clocked in</span></li>
       </ul>
     </div>
   </div>
@@ -933,6 +933,23 @@
       });
     });
     return results.join('\n');
+  }
+
+  function toggleBullet(li) {
+    const cb = li.querySelector('input[type="checkbox"]');
+    const box = li.querySelector('.bullet-check');
+    const txt = li.querySelector('.bullet-text');
+    cb.checked = !cb.checked;
+    if (cb.checked) {
+      box.style.cssText = 'background:var(--clay);border-color:var(--clay);';
+      box.innerHTML = '<span style="display:block;width:4px;height:8px;border:2px solid white;border-top:none;border-left:none;transform:rotate(45deg) translate(-1px,-1px)"></span>';
+      txt.style.cssText = 'color:#999;text-decoration:line-through;opacity:0.6;';
+    } else {
+      box.style.cssText = '';
+      box.innerHTML = '';
+      txt.style.cssText = '';
+    }
+    updateProgress();
   }
 
   function toggleFlag(cbId, expandId) {
